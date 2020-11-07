@@ -14,23 +14,23 @@ public class GeneticSearch extends Search {
     Logger log = Logger.getLogger("GeneticSearch");
 
     //number of solutions in a single generation
-    private final int populationSize = 2000;
+    private int populationSize;
 
     //number of times the population is halved to get the final mating pool
     //populationSize / (2 * tournamentRounds) HAS to be even
-    private final int tournamentRounds = 2;
+    private int tournamentRounds;
 
     //the probability of encountering a mutation in a "chromosome"
-    private final double mutationProbability = 0.01;
+    private double mutationProbability;
 
     //the probability of accepting a generation that does not improve the average fitness
-    private final double acceptanceRate = 1.0;
+    private double acceptanceRate;
 
     //limit of consecutive iterations without picking a new generation
-    private final int maxUnluckyRuns = 600;
+    private int maxUnluckyRuns;
 
     //time limit expressed in milliseconds
-    private final long timeBudget = 3600000L;
+    private long timeBudget;
 
     public GeneticSearch (List<City> c) {
         super(c);
@@ -268,5 +268,14 @@ public class GeneticSearch extends Search {
         }
 
         return best;
+    }
+
+    public void setParameters (int populationSize, int tournamentRounds, double mutationProbability, double acceptanceRate, int maxUnluckyRuns, long timeBudget) {
+        this.populationSize = populationSize;
+        this.tournamentRounds = tournamentRounds;
+        this.mutationProbability = mutationProbability;
+        this.acceptanceRate = acceptanceRate;
+        this.maxUnluckyRuns = maxUnluckyRuns;
+        this.timeBudget = timeBudget;
     }
 }
