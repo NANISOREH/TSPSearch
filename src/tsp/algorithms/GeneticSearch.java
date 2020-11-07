@@ -54,9 +54,10 @@ public class GeneticSearch extends Search {
         average = calculateAverageFitness(currentGeneration);
         bestAverage = average;
         start = Instant.now();
+        current = Instant.now();
 
         //Main loop of the algorithm
-        for (iterations=0; unluckyRuns < maxUnluckyRuns; iterations++) {
+        for (iterations=0; unluckyRuns < maxUnluckyRuns && Duration.between(start, current).toMillis() < timeBudget; iterations++) {
 
             //list with a copy of the current generation in case the next one is not worth keeping around
             currentGenerationBackup = new ArrayList<>(currentGeneration);
