@@ -20,40 +20,53 @@ public class TspSolver {
     private int maxUnluckyRuns = 600;
     private long timeBudget = 3600000L;
 
-    public TspSolver () {
+    private TspSolver () {}
 
+    public static TspSolver getSolver() {
+        return new TspSolver();
     }
 
-    public void configureHCRR(int restarts) {
+    /*This method lets the client configure the parameter needed for the execution of HCRR algorithm
+    * It returns a TspSolver, so it can be used in oneliners like:
+    * Tour solution = TspSolver.getSolver().configure(parameter).solve(algorithm)
+    * */
+    public TspSolver configureHCRR(int restarts) {
         this.restarts = restarts;
+        return this;
     }
 
-    public void configureGS(int populationSize, int tournamentRounds, double mutationProbability, double acceptanceRate, int maxUnluckyRuns, long timeBudget) {
+     /*This method lets the client configure the parameters needed for the execution of GS algorithm
+     * It returns a TspSolver, so it can be used in oneliners like:
+     * Tour solution = TspSolver.getSolver().configure(parameter1,..., parameterN).solve(algorithm)
+     * */
+    public TspSolver configureGS(int populationSize, int tournamentRounds, double mutationProbability,
+                               double acceptanceRate, int maxUnluckyRuns, long timeBudget) {
         this.populationSize = populationSize;
         this.tournamentRounds = tournamentRounds;
         this.mutationProbability = mutationProbability;
         this.acceptanceRate = acceptanceRate;
         this.maxUnluckyRuns = maxUnluckyRuns;
         this.timeBudget = timeBudget;
+        return this;
     }
 
     /* Public facade method used by the client to start the default algorithm, Simulated Annealing
     * */
-    public Tour solve (List<City> cities) throws InterruptedException {
+    public Tour search (List<City> cities) throws InterruptedException {
         return launchSA(cities);
     }
 
     /* Public facade method used by the client to start an algorithm of its choice.
        If the client launches a configurable algorithm without calling a configuration method first, default values will be used.
     * */
-    public Tour solve (List<City> cities, Algorithm algorithm) throws InterruptedException {
+    public Tour search (List<City> cities, Algorithm algorithm) throws InterruptedException {
         switch (algorithm) {
             case HILL_CLIMBING: return launchHC(cities);
             case BRUTE_FORCE: return launchBF(cities);
             case HILL_CLIMBING_RANDOM_RESTARTS: return launchHCRR(cities, restarts);
             case SIMULATED_ANNEALING: return launchSA(cities);
             case GENETIC_SEARCH: return launchGS(cities);
-            default : return launchHC(cities);
+            default : return new Tour();
         }
     }
 

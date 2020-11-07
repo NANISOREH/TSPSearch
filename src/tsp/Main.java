@@ -16,10 +16,10 @@ public class Main {
         Instant start;
         Instant finish;
         Tour solution;
-        TspSolver solver = new TspSolver();
+        TspSolver solver = TspSolver.getSolver();
 
         start = Instant.now();
-        solution = solver.solve(cities, Algorithm.HILL_CLIMBING);
+        solution = solver.search(cities, Algorithm.HILL_CLIMBING);
         finish = Instant.now();
         System.out.println("Hill Climbing:");
         System.out.println("Solution obtained in " + Duration.between(start, finish).toMillis() + " milliseconds");
@@ -27,8 +27,7 @@ public class Main {
         System.out.println("Tour: " + solution + "\n\n");
 
         start = Instant.now();
-        solver.configureHCRR(10);
-        solution = solver.solve(cities, Algorithm.HILL_CLIMBING_RANDOM_RESTARTS);
+        solution = solver.configureHCRR(10).search(cities, Algorithm.HILL_CLIMBING_RANDOM_RESTARTS);
         finish = Instant.now();
         System.out.println("Hill Climbing with 10 random restarts:");
         System.out.println("Solution obtained in " + Duration.between(start, finish).toMillis() + " milliseconds");
@@ -36,7 +35,7 @@ public class Main {
         System.out.println("Tour: " + solution + "\n\n");
 
         start = Instant.now();
-        solution = solver.solve(cities, Algorithm.SIMULATED_ANNEALING);
+        solution = solver.search(cities, Algorithm.SIMULATED_ANNEALING);
         finish = Instant.now();
         System.out.println("Simulated Annealing:");
         System.out.println("Solution obtained in " + Duration.between(start, finish).toMillis() + " milliseconds");
@@ -44,8 +43,8 @@ public class Main {
         System.out.println("Tour: " + solution + "\n\n");
 
         start = Instant.now();
-        solver.configureGS(2000, 2, 0.01, 1.0, 600, 3600000L);
-        solution = solver.solve(cities, Algorithm.GENETIC_SEARCH);
+        solution = solver.configureGS(2000, 2, 0.01, 1.0, 600, 3600000L).
+                search(cities, Algorithm.GENETIC_SEARCH);
         finish = Instant.now();
         System.out.println("Genetic Search Approach:");
         System.out.println("Solution obtained in " + Duration.between(start, finish).toMillis() + " milliseconds");
