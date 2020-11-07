@@ -1,0 +1,5 @@
+package tsp.algorithms;
+
+public enum Algorithm {
+    BRUTE_FORCE, HILL_CLIMBING, HILL_CLIMBING_RANDOM_RESTARTS, SIMULATED_ANNEALING, GENETIC_SEARCH
+}
