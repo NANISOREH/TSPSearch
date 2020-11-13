@@ -8,7 +8,7 @@ import java.util.List;
  * The class Tour represents a path covering multiple cities. A Tour is composed of a list
  * of cities belonging to the path as well as of a distance, which will represent the length of the path.
  */
-public class Tour {
+public class Tour implements Comparable {
 
     private List<City> cities;
     private double distance;
@@ -79,5 +79,17 @@ public class Tour {
             list = list + c.getName() + " - ";
         }
         return list;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Tour tour = (Tour) o;
+
+        if (this.getDistance() == tour.getDistance())
+            return 0;
+        else if (this.getDistance() > tour.getDistance())
+            return 1;
+        else
+            return -1;
     }
 }

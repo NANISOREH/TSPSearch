@@ -16,7 +16,7 @@ public class TspSolver {
     private int populationSize = 2000;
     private int tournamentRounds = 2;
     private double mutationProbability = 0.01;
-    private double acceptanceRate = 1.0;
+    private double elitismRate = 0.05;
     private int maxUnluckyRuns = 600;
     private long timeBudget = 3600000L;
 
@@ -40,11 +40,11 @@ public class TspSolver {
      * Tour solution = TspSolver.getSolver().configure(parameter1,..., parameterN).solve(algorithm)
      * */
     public TspSolver configureGS(int populationSize, int tournamentRounds, double mutationProbability,
-                               double acceptanceRate, int maxUnluckyRuns, long timeBudget) {
+                               double elitismRate, int maxUnluckyRuns, long timeBudget) {
         this.populationSize = populationSize;
         this.tournamentRounds = tournamentRounds;
         this.mutationProbability = mutationProbability;
-        this.acceptanceRate = acceptanceRate;
+        this.elitismRate = elitismRate;
         this.maxUnluckyRuns = maxUnluckyRuns;
         this.timeBudget = timeBudget;
         return this;
@@ -142,7 +142,7 @@ public class TspSolver {
         }
 
         for (GeneticSearch t : threads) {
-            t.setParameters(this.populationSize, this.tournamentRounds, this.mutationProbability, this.acceptanceRate, this.maxUnluckyRuns, this.timeBudget);
+            t.setParameters(this.populationSize, this.tournamentRounds, this.mutationProbability, this.elitismRate, this.maxUnluckyRuns, this.timeBudget);
             t.start();
         }
         for (GeneticSearch t : threads) {

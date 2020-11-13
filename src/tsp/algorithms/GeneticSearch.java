@@ -23,10 +23,11 @@ public class GeneticSearch extends Search {
     //the probability of encountering a mutation in a "chromosome"
     private double mutationProbability;
 
-    //the probability of accepting a generation that does not improve the average fitness
-    private double acceptanceRate;
+    //the percentage of tours to be considered as "elite" and preserved despite the current offspring
+    //not offering an improvement in average fitness on the previous generation
+    private double elitismRate;
 
-    //limit of consecutive iterations without picking a new generation
+    //limit of consecutive iterations allowed without picking a new generation
     private int maxUnluckyRuns;
 
     //time limit expressed in milliseconds
@@ -99,19 +100,11 @@ public class GeneticSearch extends Search {
 
             //We calculate and judge the average fitness of the new generation:
             //If the average fitness improved in this iteration, we reset the number of unlucky runs.
-            //If the average fitness didn't improve, there's a fixed chance that the new generation will be kept anyway.
+            //If the average fitness didn't improve, we increment the number of unlucky runs.
             //After a certain number of unlucky runs, the algorithm will stop and call it a day.
             average = calculateAverageFitness(nextGeneration);
             if (average >= bestAverage) {
-                if (average < bestAverage) {
-                    if (Math.random()<acceptanceRate)
-                        unluckyRuns = 0;
-                    else
-                        unluckyRuns++;
-                }
-                else {
-                    unluckyRuns++;
-                }
+                unluckyRuns++;
             }
             else if (average < bestAverage){
                 unluckyRuns = 0;
@@ -124,17 +117,17 @@ public class GeneticSearch extends Search {
                 synchronized (best) {
                     best = champion.duplicate();
                 }
-                unluckyRuns = 0;
             }
 
-            //If we improved the average fitness or found a new star solution we update the currentGeneration list,
-            //or else we revert to the previous one if we didn't
+            //If we improved the average fitness we update the currentGeneration list with the new generation,
+            //or else we revert to the previous one if we didn't. In the latter case, we still keep the top 5% tours of the generation.
             if (unluckyRuns == 0)  {
                 log.info("Thread " + currentThread() + ":\n" + "New generation accepted on iteration "
                         + iterations + "\nAverage fitness: " + average + "\nCurrent best: " + best.getDistance() + "\n\n");
                 currentGeneration = new ArrayList<>(nextGeneration);
             } else {
-                currentGeneration = currentGenerationBackup;
+                currentGeneration = new ArrayList<>(currentGenerationBackup);
+                preserveElite(currentGeneration, nextGeneration);
             }
             nextGeneration.clear();
 
@@ -147,6 +140,15 @@ public class GeneticSearch extends Search {
         log.warning("One thread has finished after " + iterations + " iterations and the top result is "
                 + findBestTour(currentGeneration) + "\nFitness: " + findBestTour(currentGeneration).getDistance());
 
+    }
+
+    private void preserveElite(ArrayList<Tour> target, ArrayList<Tour> source) {
+        Collections.sort(target);
+        Collections.sort(source);
+
+        for (int i=0; i < (int) source.size() * elitismRate; i++) {
+            target.set(target.size() - i - 1, source.get(i));
+        }
     }
 
     /*
@@ -172,41 +174,6 @@ public class GeneticSearch extends Search {
 
         return child;
     }
-
-/*    private Tour reproduce(Tour firstParent, Tour secondParent) {
-        Tour child = new Tour();
-        child.setCities(new ArrayList<City>());
-
-        for (int i=0; i<firstParent.noCities(); i++) {
-
-            if (child.getCities().contains(firstParent.getCity(i)) && child.getCities().contains(secondParent.getCity(i))){
-                child.getCities().add(i, cities.get((int)(cities.size() * Math.random())));
-            }
-            else if (Math.random() < 0.5) {
-
-                if (child.getCities().contains(firstParent.getCity(i))) {
-                    child.getCities().add(i, secondParent.getCity(i));
-                }
-                else {
-                    child.getCities().add(i, firstParent.getCity(i));
-                }
-
-            }
-            else {
-
-                if (child.getCities().contains(secondParent.getCity(i))) {
-                    child.getCities().add(i, firstParent.getCity(i));
-                }
-                else {
-                    child.getCities().add(i, secondParent.getCity(i));
-                }
-
-            }
-
-        }
-
-        return child;
-    }*/
 
     /*Helper method implementing a K-way tournament.
     * In other words
@@ -270,11 +237,11 @@ public class GeneticSearch extends Search {
         return best;
     }
 
-    public void setParameters (int populationSize, int tournamentRounds, double mutationProbability, double acceptanceRate, int maxUnluckyRuns, long timeBudget) {
+    public void setParameters (int populationSize, int tournamentRounds, double mutationProbability, double elitismRate, int maxUnluckyRuns, long timeBudget) {
         this.populationSize = populationSize;
         this.tournamentRounds = tournamentRounds;
         this.mutationProbability = mutationProbability;
-        this.acceptanceRate = acceptanceRate;
+        this.elitismRate = elitismRate;
         this.maxUnluckyRuns = maxUnluckyRuns;
         this.timeBudget = timeBudget;
     }
