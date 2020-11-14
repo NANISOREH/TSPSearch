@@ -20,6 +20,10 @@ public class TspSolver {
     private int maxUnluckyRuns = 600;
     private long timeBudget = 3600000L;
 
+    //The meaning of these parameters is explained in the SimulatedAnnealing class implementing the actual algorithm
+    private double temperature = 10000;
+    private double coolingFactor = 0.99996;
+
     private TspSolver () {}
 
     public static TspSolver getSolver() {
@@ -32,6 +36,16 @@ public class TspSolver {
     * */
     public TspSolver configureHCRR(int restarts) {
         this.restarts = restarts;
+        return this;
+    }
+
+    /*This method lets the client configure the parameter needed for the execution of SA algorithm
+     * It returns a TspSolver, so it can be used in oneliners like:
+     * Tour solution = TspSolver.getSolver().configure(parameter1,...,parameterN).solve(algorithm)
+     * */
+    public TspSolver configureSA(double temperature, double coolingFactor) {
+        this.temperature = temperature;
+        this.coolingFactor = coolingFactor;
         return this;
     }
 
@@ -164,6 +178,7 @@ public class TspSolver {
         }
 
         for (SimulatedAnnealing t : threads) {
+            t.setParameters(this.temperature, this.coolingFactor);
             t.start();
         }
         for (SimulatedAnnealing t : threads) {

@@ -77,7 +77,7 @@ public class GeneticSearch extends Search {
             for (int i = 0; i < currentGeneration.size(); i++) {
                 random = 0;
 
-                for (int j=0; j < populationSize / (currentGeneration.size()/2); j++) {
+                for (int j=0; j < populationSize / (currentGeneration.size()/tournamentRounds * tournamentRounds); j++) {
 
                     while (random == i) {
                         random = (int) (currentGeneration.size() * Math.random());
@@ -135,6 +135,22 @@ public class GeneticSearch extends Search {
             current = Instant.now();
             if (Duration.between(start, current).toMillis() > timeBudget)
                 break;
+        }
+
+        //we end the whole charade by launching a local search on the best tour we found
+        //to see if we can improve the solution locally
+        HillClimbing sa = new HillClimbing(findBestTour(currentGeneration));
+        sa.start();
+        try {
+            sa.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (HillClimbing.getBest().getDistance() < best.getDistance()){
+            synchronized (best) {
+                best = HillClimbing.getBest().duplicate();
+            }
         }
 
         log.warning("One thread has finished after " + iterations + " iterations and the top result is "

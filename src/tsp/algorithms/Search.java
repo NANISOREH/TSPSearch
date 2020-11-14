@@ -16,6 +16,8 @@ public abstract class Search extends Thread{
         best = new Tour(cities);
     }
 
+    protected Search() { }
+
     public static Tour getBest () {
         return best;
     }
