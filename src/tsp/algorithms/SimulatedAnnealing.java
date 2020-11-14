@@ -12,17 +12,22 @@ import java.util.List;
  */
 public class SimulatedAnnealing extends Search {
     // First, let's set the two input parameter of the algorithm, namely the temperature and the cooling factor.
-    private static double temperature = 10000;
-    private static double coolingFactor = 0.99996;
+    private static double temperature;
+    private static double coolingFactor;
+
+    // We create a new Tour with the given cities. Remember that the Tour constructor will shuffle the list.
+    Tour current;
 
     public SimulatedAnnealing(List<City> c) {
         super(c);
+        current = new Tour(c);
+    }
+
+    public SimulatedAnnealing (Tour given) {
+        current = given.duplicate();
     }
 
     public void run () {
-
-        // We create a new Tour with the given cities. Remember that the Tour constructor will shuffle the list.
-        Tour current = new Tour(cities);
 
         // Now, let's define the main loop of the algorithm. As shown, the for loop
         // will slowly lower the temperature by a cooling factor.
@@ -76,5 +81,10 @@ public class SimulatedAnnealing extends Search {
         if (delta < 0) return 1;
         // Otherwise, we are going to return the probability of accepting the second tour.
         return Math.exp((f1 - f2) / temp);
+    }
+
+    public void setParameters (double temperature, double coolingFactor) {
+        this.temperature = temperature;
+        this.coolingFactor = coolingFactor;
     }
 }

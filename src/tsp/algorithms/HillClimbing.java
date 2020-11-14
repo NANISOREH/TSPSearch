@@ -8,13 +8,18 @@ import java.util.List;
 
 public class HillClimbing extends Search {
 
+    Tour current;
+
     public HillClimbing(List<City> c) {
         super(c);
+        current = new Tour(c);
+    }
+
+    public HillClimbing (Tour given) {
+        current = given.duplicate();
     }
 
     public void run () {
-        // We create a new Tour with the given cities. Remember that the Tour constructor will shuffle the list.
-        Tour current = new Tour(cities);
         int i = 0; int j = 0;
 
         while (true) {

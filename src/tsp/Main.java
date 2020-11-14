@@ -43,7 +43,7 @@ public class Main {
         System.out.println("Tour: " + solution + "\n\n");
 
         start = Instant.now();
-        solution = solver.configureGS(2000, 2, 0.02, 0.05, 500, 3600000L).
+        solution = solver.configureGS(4000, 3, 0.03, 0.05, 1000, 3600000L).
                 search(cities, Algorithm.GENETIC_SEARCH);
         finish = Instant.now();
         System.out.println("Genetic Search Approach:");
